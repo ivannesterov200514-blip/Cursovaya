@@ -4,7 +4,6 @@
 #include "../core/bmp.h"
 #include "../core/files.h"
 #include "../core/stego.h"
-
 #include <QCloseEvent>
 #include <QFutureWatcher>
 #include <QImage>
@@ -25,7 +24,6 @@
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QtConcurrentRun>
-
 #include <algorithm>
 #include <exception>
 #include <fstream>
@@ -337,9 +335,7 @@ struct TaskResult {
     QString error;
 };
 
-void MainWindow::run_operation(QLabel* status, const QString& progress,
-                               function<ExtractedData()> work,
-                               function<void(const ExtractedData&)> finished) {
+void MainWindow::run_operation(QLabel* status, const QString& progress, function<ExtractedData()> work, function<void(const ExtractedData&)> finished) {
     busy = true;
     tabs->setEnabled(false);
     status_message(status, progress);

@@ -1,7 +1,6 @@
 #include "catalog_page.h"
 #include "path_field.h"
 #include "../core/files.h"
-
 #include <QComboBox>
 #include <QDesktopServices>
 #include <QDialog>
@@ -21,7 +20,6 @@
 #include <QTableWidget>
 #include <QUrl>
 #include <QVBoxLayout>
-
 #include <algorithm>
 #include <limits>
 #include <stdexcept>

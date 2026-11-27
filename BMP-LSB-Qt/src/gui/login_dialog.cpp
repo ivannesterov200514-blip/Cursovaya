@@ -1,12 +1,10 @@
 #include "login_dialog.h"
 #include "../core/auth.h"
-
 #include <QDialogButtonBox>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QVBoxLayout>
-
 #include <exception>
 
 using namespace std;
@@ -23,8 +21,7 @@ LoginDialog::LoginDialog(bool first_run, QWidget* parent)
     auto* title = new QLabel("BMP-LSB", this);
     title->setObjectName("pageTitle");
     layout->addWidget(title);
-    auto* description = new QLabel(
-        first_run ? "Задайте пароль для работы с программой. Длина — от 8 до 128 байт."
+    auto* description = new QLabel(first_run ? "Задайте пароль для работы с программой. Длина — от 8 до 128 байт."
                   : "Введите пароль, чтобы открыть проект.", this);
     description->setObjectName("muted");
     description->setWordWrap(true);

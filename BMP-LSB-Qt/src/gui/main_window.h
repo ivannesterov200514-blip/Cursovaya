@@ -1,7 +1,5 @@
 #pragma once
-
 #include "../core/records.h"
-
 #include <QMainWindow>
 #include <cstdint>
 #include <functional>
@@ -31,9 +29,7 @@ private:
     void hide_message();
     void extract_message();
     void open_record(const Record& record);
-    void run_operation(QLabel* status, const QString& progress,
-                       function<ExtractedData()> work,
-                       function<void(const ExtractedData&)> finished);
+    void run_operation(QLabel* status, const QString& progress, function<ExtractedData()> work, function<void(const ExtractedData&)> finished);
 
     QTabWidget* tabs;
     PathField* cover;

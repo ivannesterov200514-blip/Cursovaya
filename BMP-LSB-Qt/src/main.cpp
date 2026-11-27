@@ -3,14 +3,12 @@
 #include "gui/login_dialog.h"
 #include "gui/main_window.h"
 #include "gui/path_field.h"
-
 #include <QApplication>
 #include <QDir>
 #include <QFile>
 #include <QMessageBox>
 #include <QStandardPaths>
 #include <QStyleFactory>
-
 #include <exception>
 #include <stdexcept>
 

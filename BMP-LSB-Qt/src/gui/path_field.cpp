@@ -1,6 +1,5 @@
 #include "path_field.h"
 #include "../core/files.h"
-
 #include <QDir>
 #include <QFileDialog>
 #include <QFileInfo>
@@ -8,7 +7,6 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QStandardPaths>
-
 #include <stdexcept>
 
 using namespace std;
