@@ -1,0 +1,41 @@
+digraph bmp_lsb {
+    graph [bgcolor="white", rankdir=TB, splines=polyline, nodesep=0.30,
+           ranksep=0.44, margin=0.12, pad=0.14, dpi=235, fontname="DejaVu Sans"];
+    node [shape=box, style="rounded,filled", color="#445671", fillcolor="#f4f7fb",
+          fontname="DejaVu Sans", fontsize=12, margin="0.16,0.11"];
+    edge [color="#55677d", arrowsize=0.70, penwidth=1.15];
+
+    main [label="Запуск программы\nmain.cpp", fillcolor="#dbe8f8"];
+    login [label="Диалог входа\nlogin_dialog"];
+    mainwin [label="Главное окно\nmain_window"];
+    catalog [label="Каталог заданий\ncatalog_page"];
+    paths [label="Поля и выбор файлов\npath_field"];
+
+    auth [label="Проверка пароля\nauth", fillcolor="#e8edf4"];
+    records [label="Операции с записями\nrecords", fillcolor="#e8edf4"];
+    stego [label="Скрытие и извлечение\nstego", fillcolor="#e8edf4"];
+    bmp [label="Чтение BMP, вместимость\nbmp", fillcolor="#e8edf4"];
+    io [label="Бинарный ввод-вывод и временная запись\nfiles",
+        fillcolor="#dbe8f8"];
+    disk [label="Локальные файлы\nBMP, TXT, records.bin, selected.bin, account.bin",
+          shape=folder, fillcolor="#f9fafc"];
+
+    {rank=same; login; mainwin;}
+    {rank=same; catalog; paths;}
+    {rank=same; auth; records; stego;}
+    main -> login;
+    main -> mainwin;
+    login -> auth;
+    mainwin -> catalog;
+    mainwin -> paths;
+    mainwin -> stego;
+    mainwin -> bmp [constraint=false];
+    catalog -> records;
+    stego -> bmp;
+    auth -> io;
+    records -> io;
+    bmp -> io;
+    stego -> io;
+    paths -> io [constraint=false];
+    io -> disk;
+}
