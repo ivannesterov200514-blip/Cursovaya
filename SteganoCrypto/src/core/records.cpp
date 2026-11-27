@@ -97,7 +97,6 @@ bool find_record(uint32_t id, Record& result) {
     return found;
 }
 
-// Замена и удаление проходят за один проход по файлу, в памяти одна текущая запись.
 static void rewrite_records(uint32_t id, const Record* replacement, bool adding) {
     auto file = open_records(PRIMARY_FILE);
     FileWriter output(PRIMARY_FILE);

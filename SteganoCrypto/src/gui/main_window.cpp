@@ -246,8 +246,6 @@ static QImage make_thumbnail(ifstream& file, const Bmp& bmp) {
     size.setHeight(max(1, size.height()));
     QImage image(size, QImage::Format_RGB888);
 
-    // Для предпросмотра читаем только строки, которые попадают в миниатюру.
-    // Если даже одна строка слишком длинная, читаем только нужные пиксели.
     constexpr uint64_t ROW_LIMIT = 128 * 1024;
     vector<char> row(bmp.row_bytes <= ROW_LIMIT ? static_cast<size_t>(bmp.row_bytes) : 0);
     for (int y = 0; y < size.height(); y++) {
