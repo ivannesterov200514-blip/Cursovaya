@@ -6,6 +6,7 @@
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QDir>
+#include <QFile>
 #include <QFileInfo>
 #include <QFormLayout>
 #include <QFrame>
@@ -40,15 +41,57 @@ static uint32_t read_id(const QString& value) {
     return static_cast<uint32_t>(id);
 }
 
+struct ImportedFile {
+    filesystem::path source;
+    filesystem::path destination;
+};
+
+static string catalog_file_name(const QString& value, const QString& suffix, vector<ImportedFile>& imported) {
+    if (value.isEmpty())
+        throw runtime_error("Укажите имя файла или нажмите «Выбрать…»");
+
+    if (!QDir::isAbsolutePath(value)) {
+        string name = value.toStdString();
+        user_file(name, false);
+        if (!suffix.isEmpty() && QFileInfo(value).suffix().compare(suffix, Qt::CaseInsensitive) != 0)
+            throw runtime_error("Укажите имя BMP-изображения");
+        return name;
+    }
+
+    auto source = input_path(value, suffix);
+    string name = source.filename().u8string();
+    if (!valid_file_name(name))
+        throw runtime_error("Это имя файла не подходит для каталога. Переименуйте файл и выберите его снова");
+
+    auto destination = filesystem::path("files") / source.filename();
+    if (file_exists(destination)) {
+        user_file(name, false);
+        if (filesystem::equivalent(source, destination))
+            return name;
+        for (const auto& file : imported) {
+            if (file.destination == destination && filesystem::equivalent(source, file.source))
+                return name;
+        }
+        throw runtime_error("В каталоге уже есть файл «" + name + "». Выберите его или переименуйте новый файл");
+    }
+
+    destination = user_file(name, true);
+    QFile file(qt_path(source));
+    if (!file.copy(qt_path(destination)))
+        throw runtime_error("Не удалось скопировать «" + name + "»: " + file.errorString().toStdString());
+    imported.push_back({move(source), move(destination)});
+    return name;
+}
+
 static bool edit_record_form(QWidget* parent, Record& record, bool adding) {
     QDialog dialog(parent);
     dialog.setObjectName("recordDialog");
     dialog.setWindowTitle(adding ? "Добавить задание" : "Изменить задание");
-    dialog.setMinimumWidth(500);
+    dialog.setMinimumWidth(550);
     auto* layout = new QVBoxLayout(&dialog);
     layout->setContentsMargins(22, 20, 22, 20);
-    auto* hint = new QLabel("Укажите имена файлов из папки каталога: " +
-                            QDir("files").absolutePath(), &dialog);
+    auto* hint = new QLabel("Выберите файлы или введите их имена из папки каталога. "
+                            "При сохранении выбранные файлы будут скопированы в эту папку.", &dialog);
     hint->setWordWrap(true);
     hint->setObjectName("muted");
     layout->addWidget(hint);
@@ -56,12 +99,12 @@ static bool edit_record_form(QWidget* parent, Record& record, bool adding) {
     auto* form = new QFormLayout;
     auto* id = new QLineEdit(adding ? QString() : QString::number(record.id), &dialog);
     auto* title = new QLineEdit(QString::fromStdString(record.title), &dialog);
-    auto* image = new QLineEdit(QString::fromStdString(record.image), &dialog);
-    auto* payload = new QLineEdit(QString::fromStdString(record.payload), &dialog);
+    auto* image = new PathField("recordImage", "Имя файла или путь к BMP", "BMP (*.bmp)", false, &dialog);
+    auto* payload = new PathField("recordPayload", "Имя файла или путь к данным", "Текст (*.txt);;Все файлы (*)", false, &dialog);
+    image->setText(QString::fromStdString(record.image));
+    payload->setText(QString::fromStdString(record.payload));
     id->setObjectName("recordId");
     title->setObjectName("recordTitle");
-    image->setObjectName("recordImage");
-    payload->setObjectName("recordPayload");
     id->setReadOnly(!adding);
     id->setMaxLength(10);
     form->addRow("Номер", id);
@@ -83,26 +126,32 @@ static bool edit_record_form(QWidget* parent, Record& record, bool adding) {
     layout->addWidget(buttons);
     QObject::connect(buttons, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
     QObject::connect(buttons, &QDialogButtonBox::accepted, &dialog, [&] {
+        vector<ImportedFile> imported;
         try {
+            imported.reserve(2);
             Record updated{read_id(id->text()), title->text().toStdString(), image->text().toStdString(), payload->text().toStdString()};
             if (!valid_title(updated.title))
                 throw runtime_error("Введите название длиной до 80 байт");
-            if (adding || updated.image != record.image) {
-                user_file(updated.image, false);
-                if (QFileInfo(image->text()).suffix().compare("bmp", Qt::CaseInsensitive) != 0)
-                    throw runtime_error("Укажите имя BMP-изображения");
-            }
+            if (adding || updated.image != record.image)
+                updated.image = catalog_file_name(image->text(), "bmp", imported);
             if (adding || updated.payload != record.payload)
-                user_file(updated.payload, false);
+                updated.payload = catalog_file_name(payload->text(), "", imported);
 
             if (adding)
                 add_record(updated);
             else
                 edit_record(updated);
-            record = updated;
+            record = move(updated);
             dialog.accept();
         } catch (const exception& ex) {
-            error->setText(QString::fromUtf8(ex.what()));
+            QString message = QString::fromUtf8(ex.what());
+            for (const auto& file : imported) {
+                error_code cleanup_error;
+                filesystem::remove(file.destination, cleanup_error);
+                if (cleanup_error)
+                    message += "\nНе удалось удалить копию " + qt_path(file.destination);
+            }
+            error->setText(message);
             error->show();
         }
     });
