@@ -69,7 +69,7 @@ static void status_message(QLabel* status, const QString& message, bool error = 
 }
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
-    setWindowTitle("BMP-LSB — скрытие данных в изображениях");
+    setWindowTitle("SteganoCrypto — скрытие данных в изображениях");
     resize(1080, 760);
     setMinimumSize(890, 690);
 
@@ -85,7 +85,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     auto* brand = new QVBoxLayout(banner);
     brand->setContentsMargins(28, 18, 28, 17);
     brand->setSpacing(2);
-    brand->addWidget(label("BMP-LSB", "brand", banner));
+    brand->addWidget(label("SteganoCrypto", "brand", banner));
     brand->addWidget(label("Стеганография в BMP-изображениях", "brandCaption", banner));
     main_layout->addWidget(banner);
 

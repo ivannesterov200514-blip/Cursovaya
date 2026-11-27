@@ -1,0 +1,40 @@
+digraph SteganoCrypto {
+    graph [bgcolor="#ffffff", rankdir=TB, splines=polyline, nodesep=0.34,
+           ranksep=0.49, pad=0.16, fontname="DejaVu Sans",
+           label="SteganoCrypto", labelloc="t", fontsize=16];
+    node [shape=box, style="rounded,filled", color="#64758a", fillcolor="#edf4fc",
+          fontname="DejaVu Sans", fontsize=13, margin="0.16,0.11"];
+    edge [color="#435970", arrowsize=0.67, penwidth=1.12];
+
+    main [label=<<B>main.cpp</B><BR/>Запуск программы>, fillcolor="#dce9f8"];
+    login [label=<<B>login_dialog</B><BR/>Диалог входа>];
+    window [label=<<B>main_window</B><BR/>Главное окно>];
+    catalog [label=<<B>catalog_page</B><BR/>Записи и импорт<BR/>файлов>];
+    paths [label=<<B>path_field</B><BR/>Выбор файлов<BR/>и проверка путей>];
+
+    node [fillcolor="#f4f5f7"];
+    auth [label=<<B>auth</B><BR/>Проверка пароля>];
+    records [label=<<B>records</B><BR/>Работа с каталогом>];
+    stego [label=<<B>stego</B><BR/>Скрытие и<BR/>извлечение LSB>];
+    bmp [label=<<B>bmp</B><BR/>Заголовок BMP<BR/>и вместимость>];
+    files [label=<<B>files</B><BR/>Проверка файлов и запись<BR/>Блокировка каталога>];
+
+    {rank=same; login; window;}
+    {rank=same; catalog; paths; stego;}
+    {rank=same; auth; records; bmp;}
+
+    main -> login;
+    main -> window;
+    login -> auth;
+    window -> catalog;
+    window -> paths;
+    window -> stego;
+    window -> bmp [constraint=false];
+    catalog -> paths;
+    catalog -> records;
+    stego -> bmp;
+    auth -> files;
+    records -> files;
+    paths -> files;
+    stego -> files;
+}

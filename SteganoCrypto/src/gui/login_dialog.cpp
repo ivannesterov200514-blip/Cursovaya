@@ -12,13 +12,13 @@ using namespace std;
 LoginDialog::LoginDialog(bool first_run, QWidget* parent)
     : QDialog(parent), first_run(first_run), password(new QLineEdit(this)), status(new QLabel(this)) {
     setObjectName("loginDialog");
-    setWindowTitle(first_run ? "Настройка пароля — BMP-LSB" : "Вход — BMP-LSB");
+    setWindowTitle(first_run ? "Настройка пароля — SteganoCrypto" : "Вход — SteganoCrypto");
     setMinimumWidth(430);
     auto* layout = new QVBoxLayout(this);
     layout->setContentsMargins(26, 24, 26, 24);
     layout->setSpacing(12);
 
-    auto* title = new QLabel("BMP-LSB", this);
+    auto* title = new QLabel("SteganoCrypto", this);
     title->setObjectName("pageTitle");
     layout->addWidget(title);
     auto* description = new QLabel(first_run ? "Задайте пароль для работы с программой. Длина — от 8 до 128 байт."

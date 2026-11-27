@@ -17,7 +17,7 @@ using namespace std;
 int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
     app.setOrganizationName("NSTU");
-    app.setApplicationName("BMP-LSB");
+    app.setApplicationName("SteganoCrypto");
     app.setStyle(QStyleFactory::create("Fusion"));
 
     QFile style(":/interface.qss");
@@ -25,8 +25,12 @@ int main(int argc, char* argv[]) {
         app.setStyleSheet(QString::fromUtf8(style.readAll()));
 
     try {
-        const QString data_dir = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
-        if (data_dir.isEmpty() || !QDir().mkpath(data_dir) || !QDir::setCurrent(data_dir))
+        const QString data_root = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);
+        if (data_root.isEmpty())
+            throw runtime_error("Не удалось открыть рабочую папку программы");
+        // Сохраняем путь к паролю и каталогу предыдущей версии.
+        const QString data_dir = QDir(data_root).filePath("NSTU/BMP-LSB");
+        if (!QDir().mkpath(data_dir) || !QDir::setCurrent(data_dir))
             throw runtime_error("Не удалось открыть рабочую папку программы");
         const WorkspaceLock lock;
         if (!QDir().mkpath("files"))
@@ -40,7 +44,7 @@ int main(int argc, char* argv[]) {
         window.show();
         return app.exec();
     } catch (const exception& error) {
-        QMessageBox::critical(nullptr, "Ошибка запуска BMP-LSB", QString::fromUtf8(error.what()));
+        QMessageBox::critical(nullptr, "Ошибка запуска SteganoCrypto", QString::fromUtf8(error.what()));
         return 1;
     }
 }
